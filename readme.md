@@ -20,3 +20,14 @@
 
 
 
+### 학습
+
+config.py 에서 predict 유저를 설정 할 수 있습니다. (default : test.users)
+
+~~~python
+python train.py # 모델 학습
+python inference.py # recommend.txt 파일 생성
+~~~
+
+
+
