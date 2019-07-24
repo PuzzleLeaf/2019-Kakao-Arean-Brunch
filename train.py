@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 from collections import Counter
@@ -23,7 +23,7 @@ from time import gmtime, strftime
 import config as conf
 
 
-# In[2]:
+# In[ ]:
 
 
 def drawProgressBar(percent, barLen = 20):
@@ -33,34 +33,34 @@ def drawProgressBar(percent, barLen = 20):
     sys.stdout.flush()
 
 
-# In[3]:
+# In[ ]:
 
 
 print("Start")
 
 
-# In[4]:
+# In[ ]:
 
 
 # 예측 유저 목록
 predict_users = pd.read_csv(conf.predict_res, names=['user_id'])
 
 
-# In[5]:
+# In[ ]:
 
 
 # 메타 데이터
 metadata = pd.read_json('res/metadata.json', lines=True)
 
 
-# In[6]:
+# In[ ]:
 
 
 after_oct_articles = []
 after_oct_articles = metadata[metadata.reg_ts >= 1538352000000]
 
 
-# In[7]:
+# In[ ]:
 
 
 # 각 매거진 별로 얼마나 글이 있는지 체크해보자
@@ -73,7 +73,7 @@ for m_id in u_mag_ids:
     mag_count_dic[m_id] = mag_ids.count(m_id)
 
 
-# In[35]:
+# In[ ]:
 
 
 # 유저 데이터
@@ -81,7 +81,7 @@ users = pd.read_json('res/users.json', lines=True)
 users = users[['following_list', 'id', 'keyword_list']]
 
 
-# In[9]:
+# In[ ]:
 
 
 # read 데이터
@@ -104,7 +104,7 @@ for f in read_file_lst:
 read = pd.concat(read_df_lst)
 
 
-# In[10]:
+# In[ ]:
 
 
 # read 데이터 가공
@@ -115,9 +115,10 @@ read_raw = pd.DataFrame({'dt': np.repeat(read['dt'], read_cnt_by_user),
                          'hr': np.repeat(read['hr'], read_cnt_by_user),
                          'user_id': np.repeat(read['user_id'], read_cnt_by_user),
                          'article_id': chainer(read['article_id'])})
+read_raw = read_raw[['dt', 'hr', 'user_id', 'article_id']]
 
 
-# In[11]:
+# In[ ]:
 
 
 # 글별 소비수 통계
@@ -126,7 +127,7 @@ atc_read_cnt = atc_read_cnt.reset_index()
 atc_read_cnt.columns = ['article_id', 'read_cnt']
 
 
-# In[12]:
+# In[ ]:
 
 
 author_read_dic = {}
@@ -142,7 +143,7 @@ for index, row in atc_read_cnt.iterrows():
         author_read_dic[author] = article_list
 
 
-# In[13]:
+# In[ ]:
 
 
 # 윈도우 예외처리 추가
@@ -155,7 +156,7 @@ atc['type'] = atc['magazine_id'].apply(lambda x : '개인' if x == 0.0 else '매
 atc.columns = ['id', 'display_url', 'article_id', 'keyword_list', 'magazine_id', 'reg_ts', 'sub_title', 'title', 'author_id', 'reg_datetime', 'reg_dt', 'type']
 
 
-# In[14]:
+# In[ ]:
 
 
 #metadata 결합
@@ -163,14 +164,14 @@ atc_read_cnt = pd.merge(atc_read_cnt, atc, how='left', left_on='article_id', rig
 atc_read_cnt_nn = atc_read_cnt[atc_read_cnt['id'].notnull()]
 
 
-# In[15]:
+# In[ ]:
 
 
 read_cnt_frame = atc_read_cnt_nn.sort_values(["read_cnt"], ascending=[False])
 optimize_frame = read_cnt_frame.drop(['id', 'display_url', 'sub_title', 'magazine_id', 'reg_ts', 'title', 'author_id', 'reg_dt', 'type'], axis=1)
 
 
-# In[16]:
+# In[ ]:
 
 
 # article 기반 데이터 정제
@@ -179,7 +180,7 @@ for row in optimize_frame.values:
     article_detail_dic[row[0]] = {'read_cnt': row[1], 'keyword': row[2] ,'datetime': row[3]}
 
 
-# In[17]:
+# In[ ]:
 
 
 # 전체 유저별 읽은 글 목록
@@ -193,7 +194,7 @@ for row in read_raw.values:
         user_read_dic[user_id].append(article)
 
 
-# In[18]:
+# In[ ]:
 
 
 #유저별 팔로우 리스트
@@ -207,7 +208,7 @@ for row in users.values:
         user_follow_list.append(follow_list)
 
 
-# In[19]:
+# In[ ]:
 
 
 # 유저별 팔로우 목록
@@ -218,7 +219,7 @@ for row in users.values:
     user_follow_dict[user_id] = follow_list
 
 
-# In[21]:
+# In[ ]:
 
 
 # 유저의 follow가 아니면서 읽은 글 수가 많은 작가 추리기 : 전체 유저가 읽은 목록 대상 조회
@@ -258,7 +259,7 @@ for user_id, value in user_read_dic.items():
                     followable_dic[user_id] = auth_list
 
 
-# In[22]:
+# In[ ]:
 
 
 def convertTime (dateTime):
@@ -268,7 +269,7 @@ def convertTime (dateTime):
     return time.mktime(t.timetuple())
 
 
-# In[23]:
+# In[ ]:
 
 
 user_last_read_dic = {}
@@ -278,7 +279,7 @@ for row in read_raw.values:
     user_last_read_dic[row[2]][row[3]] = row[0]
 
 
-# In[24]:
+# In[ ]:
 
 
 # followable 얻기위해 apriori 알고리즘 사용
