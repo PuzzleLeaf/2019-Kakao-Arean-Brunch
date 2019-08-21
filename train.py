@@ -51,6 +51,7 @@ predict_users = pd.read_csv(conf.predict_res, names=['user_id'])
 
 # 메타 데이터
 metadata = pd.read_json('res/metadata.json', lines=True)
+metadata = metadata[['article_id', 'display_url', 'id', 'keyword_list', 'magazine_id', 'reg_ts', 'sub_title', 'title', 'user_id']]
 
 
 # In[ ]:
